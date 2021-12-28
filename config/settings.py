@@ -14,9 +14,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Custom User
+# Auth settings
 
 AUTH_USER_MODEL = 'accounts.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Application definition
 
@@ -34,7 +40,8 @@ LOCAL_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 INSTALLED_APPS = DJANGO_DEFAULT_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -115,6 +122,8 @@ LOCALE_PATHS = (BASE_DIR / 'locale',)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
