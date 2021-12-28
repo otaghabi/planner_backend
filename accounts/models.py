@@ -2,9 +2,9 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from accounts.managers import UserManager
+from utils.locale import _
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -15,7 +15,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     national_code = models.CharField(_('national code'), max_length=10, blank=True, null=True)
     phone_number = models.CharField(_('phone number'), max_length=13, blank=True, null=True)
     is_active = models.BooleanField(_('active'), default=True)
-    avatar = models.ImageField(_('avatar'), upload_to='avatars/', null=True, blank=True)
+    is_staff = models.BooleanField(_('staff'), default=False)
+    avatar = models.ImageField(_('avatar'), upload_to='avatars', default='avatars/defaults.png')
+    age = models.PositiveSmallIntegerField(_('age'), blank=True, null=True)
 
     objects = UserManager()
 
