@@ -37,6 +37,7 @@ DJANGO_DEFAULT_APPS = [
 
 LOCAL_APPS = [
     'accounts.apps.AccountsConfig',
+    'planners.apps.PlannersConfig',
 ]
 
 THIRD_PARTY_APPS = [
