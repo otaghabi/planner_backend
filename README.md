@@ -1,6 +1,6 @@
 # Planner (backend)
 
-Academic planner application designed for students and counselors.
+Academic planner application designed for students and advisors.
 
 ## Installation
 
