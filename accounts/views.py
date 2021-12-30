@@ -1,5 +1,6 @@
 from rest_framework import generics
-from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
@@ -7,7 +8,22 @@ from utils.locale import _
 from utils.response import *
 from .serializers import *
 
-login = obtain_auth_token
+
+class LoginView(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+
+            return successful_response(
+                messages=_('User Login Successfully'),
+                data={
+                    'token': token.key
+                }
+            )
+        return unsuccessful_response(errors=serializer.errors)
 
 
 class RegistrationView(generics.CreateAPIView):

@@ -1,10 +1,19 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin
 
-from accounts.models import User
+from accounts.models import User, Student, Advisor
 
 
 @admin.register(User)
-class UserAdmin(ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     # TODO complete user admin manager
+    pass
+
+
+@admin.register(Student)
+class StudentAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Advisor)
+class AdvisorAdmin(admin.ModelAdmin):
     pass

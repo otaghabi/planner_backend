@@ -37,3 +37,51 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class Advisor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(_('Biography'), null=True, blank=True)
+    subscription_fee = models.PositiveIntegerField(_('subscription fee'), default=0)
+
+    def __str__(self):
+        return self.user.get_full_name()
+
+    @property
+    def is_free(self):
+        return self.subscription_fee == 0
+
+    class Meta:
+        verbose_name = _('advisor')
+        verbose_name_plural = _('advisors')
+
+
+class Student(models.Model):
+    class Grade(models.TextChoices):
+        ONE = '1', _('One')
+        TWO = '2', _('Two')
+        THREE = '3', _('Three')
+        FOUR = '4', _('Four')
+        FIVE = '5', _('Five')
+        SIX = '6', _('Six')
+        SEVEN = '7', _('Seven')
+        EIGHT = '8', _('Eight')
+        NINE = '9', _('Nine')
+        TEEN = '10', _('Teen')
+        ELEVEN = '11', _('Eleven')
+        TWELVE = '12', _('Twelve')
+        BACHELOR = 'BC', _('Bachelor')
+        MASTERS = 'MA', _('Masters')
+        PHD = 'PHD', _('Phd')
+        UNSET = 'NONE', _('Unset')
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    grade = models.CharField(_('grade'), max_length=4, choices=Grade.choices, default=Grade.UNSET)
+    advisor = models.ForeignKey(Advisor, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.get_full_name()
+
+    class Meta:
+        verbose_name = _('student')
+        verbose_name_plural = _('students')
