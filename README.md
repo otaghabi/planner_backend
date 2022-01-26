@@ -4,7 +4,7 @@ Academic planner application designed for students and advisors.
 
 ## Installation
 
-`git clone https://github.com/khodealib/planner_backend`
+`git clone https://github.com/otaghabi/planner_backend`
 
 `cd planner_backend`
 
