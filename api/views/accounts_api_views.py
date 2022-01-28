@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from api.serializers import LoginSerializer, UserSerializer, LogoutSerializer
+from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, LogoutSerializer
 from utils.response import *
 
 
