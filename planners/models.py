@@ -8,12 +8,12 @@ from utils.locale import _
 
 
 class Course(models.Model):
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    name = models.CharField(_('course name'), max_length=255)
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, verbose_name=_('User'))
+    name = models.CharField(_('Course Name'), max_length=255)
 
     class Meta:
-        verbose_name = _('course')
-        verbose_name_plural = _('courses')
+        verbose_name = _('Course')
+        verbose_name_plural = _('Courses')
 
     def __str__(self):
         return self.name
@@ -25,17 +25,18 @@ class Task(models.Model):
         STARTED = 'S', _('Started')
         ENDED = 'E', _('Ended')
 
-    name = models.CharField(_('task name'), max_length=255)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    advisor = models.ForeignKey(Advisor, on_delete=models.SET_NULL, null=True, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(_('status'), max_length=1, choices=TaskStatus.choices, default=TaskStatus.PENDING)
-    started = models.DateTimeField(_('start time'), null=True, blank=True)
-    ended = models.DateTimeField(_('end time'), null=True, blank=True)
+    name = models.CharField(_('Task Name'), max_length=255)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name=_('Student'))
+    advisor = models.ForeignKey(Advisor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Advisor'))
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name=_('Course'))
+    assigned_date = models.DateField(verbose_name=_('Assigned Date'), null=True, blank=True)
+    status = models.CharField(_('Status'), max_length=1, choices=TaskStatus.choices, default=TaskStatus.PENDING)
+    started_date = models.DateTimeField(_('Start Time'), null=True, blank=True)
+    ended_date = models.DateTimeField(_('End Time'), null=True, blank=True)
 
     def time_spend(self):
         return self.ended - self.started
+    time_spend.short_description = _('Time Spend')
 
     def __str__(self):
         return self.name

@@ -8,16 +8,17 @@ from utils.locale import _
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
-    national_code = models.CharField(_('national code'), max_length=10, blank=True, null=True)
-    phone_number = models.CharField(_('phone number'), max_length=13, blank=True, null=True)
-    is_active = models.BooleanField(_('active'), default=True)
-    is_staff = models.BooleanField(_('staff'), default=False)
-    avatar = models.ImageField(_('avatar'), upload_to='avatars', default='avatars/defaults.png')
-    age = models.PositiveSmallIntegerField(_('age'), blank=True, null=True)
+    email = models.EmailField(_('Email Address'), unique=True)
+    first_name = models.CharField(_('First Name'), max_length=30, blank=True)
+    last_name = models.CharField(_('Last Name'), max_length=30, blank=True)
+    date_joined = models.DateTimeField(_('Date joined'), auto_now_add=True)
+    national_code = models.CharField(_('National Code'), max_length=10, blank=True, null=True)
+    phone_number = models.CharField(_('Phone Number'), max_length=13, blank=True, null=True)
+    avatar = models.ImageField(_('Avatar'), upload_to='avatars', blank=True, null=True)
+    age = models.PositiveSmallIntegerField(_('Age'), blank=True, null=True)
+    is_active = models.BooleanField(_('Active'), default=True)
+    is_staff = models.BooleanField(_('Staff'), default=False)
+    is_superuser = models.BooleanField(_('Super User'), default=False)
 
     objects = UserManager()
 
@@ -25,8 +26,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        verbose_name = _('User')
+        verbose_name_plural = _('Users')
 
     def get_full_name(self):
         full_name = '%s %s' % (self.first_name, self.last_name)
@@ -40,9 +41,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Advisor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('User'))
     bio = models.TextField(_('Biography'), null=True, blank=True)
-    subscription_fee = models.PositiveIntegerField(_('subscription fee'), default=0)
+    subscription_fee = models.PositiveIntegerField(_('Subscription fee'), default=0)
 
     def __str__(self):
         return self.user.get_full_name()
@@ -52,8 +53,8 @@ class Advisor(models.Model):
         return self.subscription_fee == 0
 
     class Meta:
-        verbose_name = _('advisor')
-        verbose_name_plural = _('advisors')
+        verbose_name = _('Advisor')
+        verbose_name_plural = _('Advisors')
 
 
 class Student(models.Model):
@@ -75,13 +76,13 @@ class Student(models.Model):
         PHD = 'PHD', _('Phd')
         UNSET = 'NONE', _('Unset')
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('User'))
     grade = models.CharField(_('grade'), max_length=4, choices=Grade.choices, default=Grade.UNSET)
-    advisor = models.ForeignKey(Advisor, on_delete=models.SET_NULL, null=True, blank=True)
+    advisor = models.ForeignKey(Advisor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Advisor'))
 
     def __str__(self):
         return self.user.get_full_name()
 
     class Meta:
-        verbose_name = _('student')
-        verbose_name_plural = _('students')
+        verbose_name = _('Student')
+        verbose_name_plural = _('Students')
