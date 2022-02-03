@@ -2,20 +2,27 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
 from django.db import models
+from django.utils import timezone
 
 from accounts.managers import UserManager
 from utils.locale import _
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    class Gender(models.TextChoices):
+        MALE = 'M', _('Male')
+        FEMALE = 'F', _('Female')
+        UNSET = 'NONE', _('Unset')
+
     email = models.EmailField(_('Email Address'), unique=True)
     first_name = models.CharField(_('First Name'), max_length=30, blank=True)
     last_name = models.CharField(_('Last Name'), max_length=30, blank=True)
-    date_joined = models.DateTimeField(_('Date joined'), auto_now_add=True)
+    date_joined = models.DateTimeField(_('Date joined'), default=timezone.now)
     national_code = models.CharField(_('National Code'), max_length=10, blank=True, null=True)
     phone_number = models.CharField(_('Phone Number'), max_length=13, blank=True, null=True)
     avatar = models.ImageField(_('Avatar'), upload_to='avatars', blank=True, null=True)
     age = models.PositiveSmallIntegerField(_('Age'), blank=True, null=True)
+    gender = models.CharField(_('Gender'), max_length=4, choices=Gender.choices, default=Gender.UNSET)
     is_active = models.BooleanField(_('Active'), default=True)
     is_staff = models.BooleanField(_('Staff'), default=False)
     is_superuser = models.BooleanField(_('Super User'), default=False)
@@ -38,6 +45,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def email_user(self, subject, message, from_email=None, **kwargs):
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+    @property
+    def is_advisor(self):
+        return hasattr(self, 'advisor')
+
+    @property
+    def is_student(self):
+        return hasattr(self, 'student')
 
 
 class Advisor(models.Model):
