@@ -7,13 +7,13 @@ app_name = 'api'
 urlpatterns = []
 
 accounts_urlpatterns = [
-    path('register/', RegistrationView.as_view(), name='register'),
-    path('register/advisor/', CreateAdvisorView.as_view(), name='advisor'),
-    path('register/student/', CreateStudentView.as_view(), name='student'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('login/refresh/', RefreshView.as_view(), name='refresh'),
-    path('profile/', ProfileView.as_view(), name='profile'),
-    path('logout/', TokenBlacklistView.as_view(), name='logout'),
+    path('auth/register/', RegistrationView.as_view(), name='register'),
+    path('auth/register/advisor/', CreateAdvisorView.as_view(), name='advisor'),
+    path('auth/register/student/', CreateStudentView.as_view(), name='student'),
+    path('auth/login/', LoginView.as_view(), name='login'),
+    path('auth/login/refresh/', RefreshView.as_view(), name='refresh'),
+    path('auth/profile/', ProfileView.as_view(), name='profile'),
+    path('auth/logout/', TokenBlacklistView.as_view(), name='logout'),
 ]
 
 urlpatterns += accounts_urlpatterns
