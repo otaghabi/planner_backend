@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-
-from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, LogoutSerializer
+from accounts.permissions import IsHasNotAnyRole
+from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, AdvisorSerializer, StudentSerializer
 from utils.response import *
 
 
@@ -19,12 +20,26 @@ class LoginView(generics.GenericAPIView):
                                 password=serializer.validated_data['password'])
             token = RefreshToken.for_user(user)
             user = UserSerializer(user)
-            context = {
+            content = {
                 'refresh_token': str(token),
                 'access_token': str(token.access_token),
                 'user': user.data
             }
-            return successful_response(data=context)
+            return successful_response(data=content)
+        return unsuccessful_response(errors=serializer.errors)
+
+
+class RefreshView(generics.GenericAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TokenRefreshSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            content = {
+                'access_token': serializer.validated_data['access']
+            }
+            return successful_response(data=content)
         return unsuccessful_response(errors=serializer.errors)
 
 
@@ -42,7 +57,6 @@ class RegistrationView(generics.CreateAPIView):
 
 class LogoutView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = LogoutSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -68,4 +82,38 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         if serializer.is_valid():
             self.perform_update(serializer)
             return successful_response(serializer.data)
+        return unsuccessful_response(errors=serializer.errors)
+
+
+class CreateAdvisorView(generics.GenericAPIView):
+    permission_classes = (IsHasNotAnyRole,)
+    serializer_class = AdvisorSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            user = UserSerializer(request.user)
+            content = {
+                **user.data,
+                **serializer.data
+            }
+            return successful_response(data=content)
+        return unsuccessful_response(errors=serializer.errors)
+
+
+class CreateStudentView(generics.GenericAPIView):
+    permission_classes = (IsHasNotAnyRole,)
+    serializer_class = StudentSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            user = UserSerializer(request.user)
+            content = {
+                **user.data,
+                **serializer.data
+            }
+            return successful_response(data=content)
         return unsuccessful_response(errors=serializer.errors)

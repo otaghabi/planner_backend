@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.models import User
+from accounts.models import User, Advisor, Student
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,3 +64,46 @@ class LogoutSerializer(serializers.Serializer):
             RefreshToken(self.token).blacklist()
         except TokenError:
             self.fail('bad_token')
+
+
+class AdvisorSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Advisor
+        fields = (
+            'user',
+            'bio',
+            'subscription_fee'
+        )
+
+    def save(self, **kwargs):
+        """
+           kwargs should contain `user` object
+           it should be evaluated from AuthToken
+           """
+        user = kwargs.get('user')
+        assert user is not None, "`user` is None"
+        return super().save(user=user)
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    advisor = serializers.PrimaryKeyRelatedField(queryset=Advisor.objects.all(), required=False)
+
+    class Meta:
+        model = Student
+        fields = (
+            'user',
+            'advisor',
+            'grade',
+        )
+
+    def save(self, **kwargs):
+        """
+           kwargs should contain `user` object
+           it should be evaluated from AuthToken
+           """
+        user = kwargs.get('user')
+        assert user is not None, "`user` is None"
+        return super().save(user=user)
