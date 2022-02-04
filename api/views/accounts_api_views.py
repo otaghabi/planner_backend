@@ -4,10 +4,14 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.models import Advisor, Student
-from accounts.permissions import IsHasNotAnyRole, IsStudent, IsAdvisor
-from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, CreateAdvisorSerializer, \
-    CreateStudentSerializer, AdvisorSerializer, StudentSerializer
+from accounts.models import Student, Advisor
+from accounts.permissions import (
+    IsAdvisor, IsStudent, IsHasNotAnyRoleOrStudent, IsHasNotAnyRoleOrAdvisor
+)
+from api.serializers.accounts_serializers import (
+    StudentSerializer, AdvisorSerializer, UserSerializer,
+    CreateStudentSerializer, CreateAdvisorSerializer, LoginSerializer
+)
 from utils.pagination import PlannerPagination
 from utils.response import *
 
@@ -89,34 +93,34 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 
 class CreateAdvisorView(generics.GenericAPIView):
-    permission_classes = (IsHasNotAnyRole,)
+    permission_classes = (IsHasNotAnyRoleOrAdvisor,)
     serializer_class = CreateAdvisorSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            user = UserSerializer(request.user)
+            advisor = Advisor.objects.get(user=request.user)
+            advisor = AdvisorSerializer(advisor)
             content = {
-                **user.data,
-                **serializer.data
+                **advisor.data
             }
             return successful_response(data=content)
         return unsuccessful_response(errors=serializer.errors)
 
 
 class CreateStudentView(generics.GenericAPIView):
-    permission_classes = (IsHasNotAnyRole,)
+    permission_classes = (IsHasNotAnyRoleOrStudent,)
     serializer_class = CreateStudentSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
-            user = UserSerializer(request.user)
+            student = Advisor.objects.get(user=request.user)
+            student = AdvisorSerializer(student)
             content = {
-                **user.data,
-                **serializer.data
+                **student.data
             }
             return successful_response(data=content)
         return unsuccessful_response(errors=serializer.errors)
