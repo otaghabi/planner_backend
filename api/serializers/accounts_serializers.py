@@ -66,7 +66,7 @@ class LogoutSerializer(serializers.Serializer):
             self.fail('bad_token')
 
 
-class AdvisorSerializer(serializers.ModelSerializer):
+class CreateAdvisorSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -87,7 +87,7 @@ class AdvisorSerializer(serializers.ModelSerializer):
         return super().save(user=user)
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class CreateStudentSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(read_only=True)
     advisor = serializers.PrimaryKeyRelatedField(queryset=Advisor.objects.all(), required=False)
 
@@ -107,3 +107,29 @@ class StudentSerializer(serializers.ModelSerializer):
         user = kwargs.get('user')
         assert user is not None, "`user` is None"
         return super().save(user=user)
+
+
+class AdvisorSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Advisor
+        fields = (
+            'user',
+            'id',
+            'bio',
+            'subscription_fee'
+        )
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Student
+        fields = (
+            'user',
+            'id',
+            'grade'
+        )
+

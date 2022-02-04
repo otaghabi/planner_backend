@@ -14,6 +14,11 @@ accounts_urlpatterns = [
     path('auth/login/refresh/', RefreshView.as_view(), name='refresh'),
     path('auth/profile/', ProfileView.as_view(), name='profile'),
     path('auth/logout/', TokenBlacklistView.as_view(), name='logout'),
+    # student urls
+    path('student/advisors/', AdvisorsListView.as_view(), name='advisors_list'),
+
+    # advisor urls
+    path('advisor/students/', StudentListView.as_view(), name='student_list')
 ]
 
 urlpatterns += accounts_urlpatterns

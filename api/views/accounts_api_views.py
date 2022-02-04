@@ -4,8 +4,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.permissions import IsHasNotAnyRole
-from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, AdvisorSerializer, StudentSerializer
+from accounts.models import Advisor, Student
+from accounts.permissions import IsHasNotAnyRole, IsStudent, IsAdvisor
+from api.serializers.accounts_serializers import LoginSerializer, UserSerializer, CreateAdvisorSerializer, \
+    CreateStudentSerializer, AdvisorSerializer, StudentSerializer
+from utils.pagination import PlannerPagination
 from utils.response import *
 
 
@@ -87,7 +90,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 class CreateAdvisorView(generics.GenericAPIView):
     permission_classes = (IsHasNotAnyRole,)
-    serializer_class = AdvisorSerializer
+    serializer_class = CreateAdvisorSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -104,7 +107,7 @@ class CreateAdvisorView(generics.GenericAPIView):
 
 class CreateStudentView(generics.GenericAPIView):
     permission_classes = (IsHasNotAnyRole,)
-    serializer_class = StudentSerializer
+    serializer_class = CreateStudentSerializer
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -117,3 +120,28 @@ class CreateStudentView(generics.GenericAPIView):
             }
             return successful_response(data=content)
         return unsuccessful_response(errors=serializer.errors)
+
+
+class AdvisorsListView(generics.GenericAPIView):
+    pagination_class = PlannerPagination
+    permission_classes = (IsStudent,)
+    queryset = Advisor.objects.all()
+    serializer_class = AdvisorSerializer
+
+    def get(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(page, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class StudentListView(generics.GenericAPIView):
+    pagination_class = PlannerPagination
+    permission_classes = (IsAdvisor,)
+    serializer_class = StudentSerializer
+
+    def get(self, request):
+        queryset = Student.objects.filter(advisor__user=request.user)
+        page = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(page, many=True)
+        return self.get_paginated_response(serializer.data)
