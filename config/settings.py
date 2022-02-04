@@ -26,6 +26,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
+    'DEFAULT_PAGINATION_CLASS': 'utils.pagination.PlannerPagination',
 }
 
 SIMPLE_JWT = {

@@ -16,7 +16,7 @@ class PlannerPagination(pagination.PageNumberPagination):
             pagination={
                 'current_page': self.page.number,
                 'has_more_page': self.page.has_next(),
-                'per_page': self.page_size,
+                'per_page': int(self.request.GET.get('page_size', self.page_size)),
                 'total': self.page.paginator.count
             }
         )
