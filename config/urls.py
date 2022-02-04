@@ -20,10 +20,6 @@ schema_view = get_schema_view(
     permission_classes=(AllowAny,),
 )
 
-swagger_urlpatterns_debug = [
-    re_path(r'^doc/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-redoc')
-]
-
 swagger_urlpatterns_production = [
     re_path(r'^doc/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-redoc')
 ]
