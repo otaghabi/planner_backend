@@ -36,6 +36,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
     'DEFAULT_PAGINATION_CLASS': 'utils.pagination.PlannerPagination',
+    'EXCEPTION_HANDLER': 'utils.response.planner_exception_handler'
 }
 
 SIMPLE_JWT = {
